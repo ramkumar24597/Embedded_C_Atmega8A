@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "LedBlink_Timers", "LedBlink_Timers\LedBlink_Timers.cproj", "{AAB8CD2D-2900-41AB-B7B5-9586C7F37212}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAB8CD2D-2900-41AB-B7B5-9586C7F37212}.Debug|AVR.ActiveCfg = Debug|AVR
+		{AAB8CD2D-2900-41AB-B7B5-9586C7F37212}.Debug|AVR.Build.0 = Debug|AVR
+		{AAB8CD2D-2900-41AB-B7B5-9586C7F37212}.Release|AVR.ActiveCfg = Release|AVR
+		{AAB8CD2D-2900-41AB-B7B5-9586C7F37212}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
