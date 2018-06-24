@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "PWM (Phase Correct Mode)", "PWM (Phase Correct Mode)\PWM (Phase Correct Mode).cproj", "{CA262888-0858-4346-84D7-2D56AF446563}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA262888-0858-4346-84D7-2D56AF446563}.Debug|AVR.ActiveCfg = Debug|AVR
+		{CA262888-0858-4346-84D7-2D56AF446563}.Debug|AVR.Build.0 = Debug|AVR
+		{CA262888-0858-4346-84D7-2D56AF446563}.Release|AVR.ActiveCfg = Release|AVR
+		{CA262888-0858-4346-84D7-2D56AF446563}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

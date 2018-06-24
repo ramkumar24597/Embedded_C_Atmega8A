@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Timer (CTC Mode)", "Timer (CTC Mode)\Timer (CTC Mode).cproj", "{C94A161A-8172-4248-B02D-A0380FF4CF81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C94A161A-8172-4248-B02D-A0380FF4CF81}.Debug|AVR.ActiveCfg = Debug|AVR
+		{C94A161A-8172-4248-B02D-A0380FF4CF81}.Debug|AVR.Build.0 = Debug|AVR
+		{C94A161A-8172-4248-B02D-A0380FF4CF81}.Release|AVR.ActiveCfg = Release|AVR
+		{C94A161A-8172-4248-B02D-A0380FF4CF81}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
