@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "I2C_Master_RecvMode", "I2C_Master_RecvMode\I2C_Master_RecvMode.cproj", "{7E967EEC-8D31-459C-A430-30BEF3E72181}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7E967EEC-8D31-459C-A430-30BEF3E72181}.Debug|AVR.ActiveCfg = Debug|AVR
+		{7E967EEC-8D31-459C-A430-30BEF3E72181}.Debug|AVR.Build.0 = Debug|AVR
+		{7E967EEC-8D31-459C-A430-30BEF3E72181}.Release|AVR.ActiveCfg = Release|AVR
+		{7E967EEC-8D31-459C-A430-30BEF3E72181}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

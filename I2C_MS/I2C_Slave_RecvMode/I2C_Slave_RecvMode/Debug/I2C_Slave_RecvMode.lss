@@ -1,0 +1,147 @@
+
+I2C_Slave_RecvMode.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000006e  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .comment      00000030  00000000  00000000  000000c2  2**0
+                  CONTENTS, READONLY
+  2 .debug_aranges 00000050  00000000  00000000  000000f2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  3 .debug_info   000001bc  00000000  00000000  00000142  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_abbrev 00000167  00000000  00000000  000002fe  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_line   000001b6  00000000  00000000  00000465  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_frame  00000068  00000000  00000000  0000061c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_str    0000019c  00000000  00000000  00000684  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_ranges 00000030  00000000  00000000  00000820  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	19 c0       	rjmp	.+50     	; 0x36 <__bad_interrupt>
+   4:	18 c0       	rjmp	.+48     	; 0x36 <__bad_interrupt>
+   6:	17 c0       	rjmp	.+46     	; 0x36 <__bad_interrupt>
+   8:	16 c0       	rjmp	.+44     	; 0x36 <__bad_interrupt>
+   a:	15 c0       	rjmp	.+42     	; 0x36 <__bad_interrupt>
+   c:	14 c0       	rjmp	.+40     	; 0x36 <__bad_interrupt>
+   e:	13 c0       	rjmp	.+38     	; 0x36 <__bad_interrupt>
+  10:	12 c0       	rjmp	.+36     	; 0x36 <__bad_interrupt>
+  12:	11 c0       	rjmp	.+34     	; 0x36 <__bad_interrupt>
+  14:	10 c0       	rjmp	.+32     	; 0x36 <__bad_interrupt>
+  16:	0f c0       	rjmp	.+30     	; 0x36 <__bad_interrupt>
+  18:	0e c0       	rjmp	.+28     	; 0x36 <__bad_interrupt>
+  1a:	0d c0       	rjmp	.+26     	; 0x36 <__bad_interrupt>
+  1c:	0c c0       	rjmp	.+24     	; 0x36 <__bad_interrupt>
+  1e:	0b c0       	rjmp	.+22     	; 0x36 <__bad_interrupt>
+  20:	0a c0       	rjmp	.+20     	; 0x36 <__bad_interrupt>
+  22:	09 c0       	rjmp	.+18     	; 0x36 <__bad_interrupt>
+  24:	08 c0       	rjmp	.+16     	; 0x36 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+  32:	16 d0       	rcall	.+44     	; 0x60 <main>
+  34:	1a c0       	rjmp	.+52     	; 0x6a <_exit>
+
+00000036 <__bad_interrupt>:
+  36:	e4 cf       	rjmp	.-56     	; 0x0 <__vectors>
+
+00000038 <I2C_init>:
+#include <util/delay.h>
+
+void I2C_init(uint8_t slave_address)
+{
+	/* defining this slave address */
+	TWAR = slave_address;
+  38:	82 b9       	out	0x02, r24	; 2
+  3a:	08 95       	ret
+
+0000003c <I2C_SlaveMatchACK>:
+}
+
+void I2C_SlaveMatchACK(void)
+{
+	/* Enabling transfer */
+	TWCR = (1<<TWEN)|(1<<TWEA);
+  3c:	84 e4       	ldi	r24, 0x44	; 68
+  3e:	86 bf       	out	0x36, r24	; 54
+	
+	/* waiting until req status is obtained */
+	while((TWSR & (0xF8)) != 0x60);
+  40:	81 b1       	in	r24, 0x01	; 1
+  42:	88 7f       	andi	r24, 0xF8	; 248
+  44:	80 36       	cpi	r24, 0x60	; 96
+  46:	e1 f7       	brne	.-8      	; 0x40 <__SREG__+0x1>
+}
+  48:	08 95       	ret
+
+0000004a <I2C_ReadData>:
+unsigned char I2C_ReadData(void)
+{
+	uint8_t recvdata;
+	
+	/* Enabling transfer */
+	TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWEA);
+  4a:	84 ec       	ldi	r24, 0xC4	; 196
+  4c:	86 bf       	out	0x36, r24	; 54
+	
+	/* waiting to finish the reading condition */
+	while((TWCR & (1<<TWINT)) == 0);
+  4e:	06 b6       	in	r0, 0x36	; 54
+  50:	07 fe       	sbrs	r0, 7
+  52:	fd cf       	rjmp	.-6      	; 0x4e <I2C_ReadData+0x4>
+	
+	/* waiting until req status is obtained */
+	while((TWSR & (0xF8)) != 0x80);
+  54:	81 b1       	in	r24, 0x01	; 1
+  56:	88 7f       	andi	r24, 0xF8	; 248
+  58:	80 38       	cpi	r24, 0x80	; 128
+  5a:	e1 f7       	brne	.-8      	; 0x54 <I2C_ReadData+0xa>
+	
+	/* getting data from the data buffer */
+	recvdata = TWDR;
+  5c:	83 b1       	in	r24, 0x03	; 3
+	
+	return recvdata;
+}
+  5e:	08 95       	ret
+
+00000060 <main>:
+int main(void)
+{
+	uint8_t data;
+	
+	/* Initializing I2C Protocol */
+	I2C_init(0x20);
+  60:	80 e2       	ldi	r24, 0x20	; 32
+  62:	ea df       	rcall	.-44     	; 0x38 <I2C_init>
+	while(1)
+	{
+		//TODO:: Please write your application code
+		
+		/* Returning slave match ACK */
+		I2C_SlaveMatchACK();
+  64:	eb df       	rcall	.-42     	; 0x3c <I2C_SlaveMatchACK>
+		
+		/* Reading data from the master */
+		data = I2C_ReadData();
+  66:	f1 df       	rcall	.-30     	; 0x4a <I2C_ReadData>
+  68:	fd cf       	rjmp	.-6      	; 0x64 <main+0x4>
+
+0000006a <_exit>:
+  6a:	f8 94       	cli
+
+0000006c <__stop_program>:
+  6c:	ff cf       	rjmp	.-2      	; 0x6c <__stop_program>
