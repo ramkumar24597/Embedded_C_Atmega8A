@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "I2C_BitBanging", "I2C_BitBanging\I2C_BitBanging.cproj", "{788D0495-4D28-4CF6-9A41-7F2C4D8F0CCD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{788D0495-4D28-4CF6-9A41-7F2C4D8F0CCD}.Debug|AVR.ActiveCfg = Debug|AVR
+		{788D0495-4D28-4CF6-9A41-7F2C4D8F0CCD}.Debug|AVR.Build.0 = Debug|AVR
+		{788D0495-4D28-4CF6-9A41-7F2C4D8F0CCD}.Release|AVR.ActiveCfg = Release|AVR
+		{788D0495-4D28-4CF6-9A41-7F2C4D8F0CCD}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
