@@ -1,0 +1,631 @@
+
+SPI_REG_BASED.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000002c0  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .comment      00000030  00000000  00000000  00000314  2**0
+                  CONTENTS, READONLY
+  2 .debug_aranges 000000b0  00000000  00000000  00000344  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  3 .debug_info   00000b13  00000000  00000000  000003f4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_abbrev 000004b3  00000000  00000000  00000f07  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_line   000005f9  00000000  00000000  000013ba  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_frame  00000134  00000000  00000000  000019b4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_str    000002d6  00000000  00000000  00001ae8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_loc    0000026a  00000000  00000000  00001dbe  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_ranges 00000070  00000000  00000000  00002028  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	19 c0       	rjmp	.+50     	; 0x36 <__bad_interrupt>
+   4:	18 c0       	rjmp	.+48     	; 0x36 <__bad_interrupt>
+   6:	17 c0       	rjmp	.+46     	; 0x36 <__bad_interrupt>
+   8:	16 c0       	rjmp	.+44     	; 0x36 <__bad_interrupt>
+   a:	15 c0       	rjmp	.+42     	; 0x36 <__bad_interrupt>
+   c:	14 c0       	rjmp	.+40     	; 0x36 <__bad_interrupt>
+   e:	13 c0       	rjmp	.+38     	; 0x36 <__bad_interrupt>
+  10:	12 c0       	rjmp	.+36     	; 0x36 <__bad_interrupt>
+  12:	11 c0       	rjmp	.+34     	; 0x36 <__bad_interrupt>
+  14:	10 c0       	rjmp	.+32     	; 0x36 <__bad_interrupt>
+  16:	0f c0       	rjmp	.+30     	; 0x36 <__bad_interrupt>
+  18:	0e c0       	rjmp	.+28     	; 0x36 <__bad_interrupt>
+  1a:	0d c0       	rjmp	.+26     	; 0x36 <__bad_interrupt>
+  1c:	0c c0       	rjmp	.+24     	; 0x36 <__bad_interrupt>
+  1e:	0b c0       	rjmp	.+22     	; 0x36 <__bad_interrupt>
+  20:	0a c0       	rjmp	.+20     	; 0x36 <__bad_interrupt>
+  22:	09 c0       	rjmp	.+18     	; 0x36 <__bad_interrupt>
+  24:	08 c0       	rjmp	.+16     	; 0x36 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+  32:	8b d0       	rcall	.+278    	; 0x14a <main>
+  34:	43 c1       	rjmp	.+646    	; 0x2bc <_exit>
+
+00000036 <__bad_interrupt>:
+  36:	e4 cf       	rjmp	.-56     	; 0x0 <__vectors>
+
+00000038 <EEPROM_Init>:
+#include "EEPROM_25AA256.h"
+
+void EEPROM_Init(void)
+{
+	/* Make & Configure Chip Select pin for EEPROM */
+	DDRB |= (1<<EEPROM_CHIPSELECT);
+  38:	b8 9a       	sbi	0x17, 0	; 23
+	PORTB |= (1<<EEPROM_CHIPSELECT);
+  3a:	c0 9a       	sbi	0x18, 0	; 24
+  3c:	08 95       	ret
+
+0000003e <EEPROM_Write>:
+}
+
+void EEPROM_Write(uint16_t address, uint32_t Data)
+{
+  3e:	ff 92       	push	r15
+  40:	0f 93       	push	r16
+  42:	1f 93       	push	r17
+  44:	cf 93       	push	r28
+  46:	df 93       	push	r29
+  48:	08 2f       	mov	r16, r24
+  4a:	f9 2e       	mov	r15, r25
+  4c:	c4 2f       	mov	r28, r20
+  4e:	d5 2f       	mov	r29, r21
+  50:	16 2f       	mov	r17, r22
+	/* Set Write-Enable-Latch bit */
+	PORTB &= ~(1<<EEPROM_CHIPSELECT);		// PORTB.0 to LOW to select the EEPROM
+  52:	c0 98       	cbi	0x18, 0	; 24
+	SPI_Send(WREN);
+  54:	86 e0       	ldi	r24, 0x06	; 6
+  56:	29 d1       	rcall	.+594    	; 0x2aa <SPI_Send>
+	PORTB |= (1<<EEPROM_CHIPSELECT);		// PORTB.0 to HIGH to de-select the EEPROM
+  58:	c0 9a       	sbi	0x18, 0	; 24
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  5a:	2f ef       	ldi	r18, 0xFF	; 255
+  5c:	80 e7       	ldi	r24, 0x70	; 112
+  5e:	92 e0       	ldi	r25, 0x02	; 2
+  60:	21 50       	subi	r18, 0x01	; 1
+  62:	80 40       	sbci	r24, 0x00	; 0
+  64:	90 40       	sbci	r25, 0x00	; 0
+  66:	e1 f7       	brne	.-8      	; 0x60 <__SREG__+0x21>
+  68:	00 c0       	rjmp	.+0      	; 0x6a <__SREG__+0x2b>
+  6a:	00 00       	nop
+	_delay_ms(100);
+	
+	/* Read Status Register (for Verification) */
+	PORTB &= ~(1<<EEPROM_CHIPSELECT);
+  6c:	c0 98       	cbi	0x18, 0	; 24
+	SPI_Send(RDSR);
+  6e:	85 e0       	ldi	r24, 0x05	; 5
+  70:	1c d1       	rcall	.+568    	; 0x2aa <SPI_Send>
+	SPI_Recv(0xFF);
+  72:	8f ef       	ldi	r24, 0xFF	; 255
+  74:	1e d1       	rcall	.+572    	; 0x2b2 <SPI_Recv>
+	PORTB |= (1<<EEPROM_CHIPSELECT);
+  76:	c0 9a       	sbi	0x18, 0	; 24
+  78:	2f ef       	ldi	r18, 0xFF	; 255
+  7a:	80 e7       	ldi	r24, 0x70	; 112
+  7c:	92 e0       	ldi	r25, 0x02	; 2
+  7e:	21 50       	subi	r18, 0x01	; 1
+  80:	80 40       	sbci	r24, 0x00	; 0
+  82:	90 40       	sbci	r25, 0x00	; 0
+  84:	e1 f7       	brne	.-8      	; 0x7e <__SREG__+0x3f>
+  86:	00 c0       	rjmp	.+0      	; 0x88 <__SREG__+0x49>
+  88:	00 00       	nop
+	_delay_ms(100);
+	
+	/* Write the Data */
+	PORTB &= ~(1<<EEPROM_CHIPSELECT);
+  8a:	c0 98       	cbi	0x18, 0	; 24
+	SPI_Send(WRITE);
+  8c:	82 e0       	ldi	r24, 0x02	; 2
+  8e:	0d d1       	rcall	.+538    	; 0x2aa <SPI_Send>
+	SPI_Send(address >> 8);
+  90:	8f 2d       	mov	r24, r15
+  92:	0b d1       	rcall	.+534    	; 0x2aa <SPI_Send>
+	SPI_Send(address);
+  94:	80 2f       	mov	r24, r16
+  96:	09 d1       	rcall	.+530    	; 0x2aa <SPI_Send>
+	SPI_Send(Data >> 16);
+  98:	81 2f       	mov	r24, r17
+  9a:	07 d1       	rcall	.+526    	; 0x2aa <SPI_Send>
+	SPI_Send(Data >> 8);
+  9c:	8d 2f       	mov	r24, r29
+  9e:	05 d1       	rcall	.+522    	; 0x2aa <SPI_Send>
+	SPI_Send(Data);
+  a0:	8c 2f       	mov	r24, r28
+  a2:	03 d1       	rcall	.+518    	; 0x2aa <SPI_Send>
+	PORTB |= (1<<EEPROM_CHIPSELECT);
+  a4:	c0 9a       	sbi	0x18, 0	; 24
+  a6:	2f ef       	ldi	r18, 0xFF	; 255
+  a8:	80 e7       	ldi	r24, 0x70	; 112
+  aa:	92 e0       	ldi	r25, 0x02	; 2
+  ac:	21 50       	subi	r18, 0x01	; 1
+  ae:	80 40       	sbci	r24, 0x00	; 0
+  b0:	90 40       	sbci	r25, 0x00	; 0
+  b2:	e1 f7       	brne	.-8      	; 0xac <__SREG__+0x6d>
+  b4:	00 c0       	rjmp	.+0      	; 0xb6 <__SREG__+0x77>
+  b6:	00 00       	nop
+	_delay_ms(100);
+	
+	/* Read Status Register (for Verification) */
+	PORTB &= ~(1<<EEPROM_CHIPSELECT);
+  b8:	c0 98       	cbi	0x18, 0	; 24
+	SPI_Send(RDSR);
+  ba:	85 e0       	ldi	r24, 0x05	; 5
+  bc:	f6 d0       	rcall	.+492    	; 0x2aa <SPI_Send>
+	SPI_Recv(0xFF);
+  be:	8f ef       	ldi	r24, 0xFF	; 255
+  c0:	f8 d0       	rcall	.+496    	; 0x2b2 <SPI_Recv>
+	PORTB |= (1<<EEPROM_CHIPSELECT);
+  c2:	c0 9a       	sbi	0x18, 0	; 24
+  c4:	2f ef       	ldi	r18, 0xFF	; 255
+  c6:	80 e7       	ldi	r24, 0x70	; 112
+  c8:	92 e0       	ldi	r25, 0x02	; 2
+  ca:	21 50       	subi	r18, 0x01	; 1
+  cc:	80 40       	sbci	r24, 0x00	; 0
+  ce:	90 40       	sbci	r25, 0x00	; 0
+  d0:	e1 f7       	brne	.-8      	; 0xca <__SREG__+0x8b>
+  d2:	00 c0       	rjmp	.+0      	; 0xd4 <__SREG__+0x95>
+  d4:	00 00       	nop
+	_delay_ms(100);
+}
+  d6:	df 91       	pop	r29
+  d8:	cf 91       	pop	r28
+  da:	1f 91       	pop	r17
+  dc:	0f 91       	pop	r16
+  de:	ff 90       	pop	r15
+  e0:	08 95       	ret
+
+000000e2 <EEPROM_Read>:
+
+uint32_t EEPROM_Read(uint16_t address)
+{
+  e2:	cf 92       	push	r12
+  e4:	df 92       	push	r13
+  e6:	ef 92       	push	r14
+  e8:	ff 92       	push	r15
+  ea:	f8 2e       	mov	r15, r24
+  ec:	e9 2e       	mov	r14, r25
+	uint32_t ReadData;
+	
+	/* Read the Data */
+	PORTB &= ~(1<<EEPROM_CHIPSELECT);
+  ee:	c0 98       	cbi	0x18, 0	; 24
+	SPI_Send(READ);
+  f0:	83 e0       	ldi	r24, 0x03	; 3
+  f2:	db d0       	rcall	.+438    	; 0x2aa <SPI_Send>
+	SPI_Send(address >> 8);
+  f4:	8e 2d       	mov	r24, r14
+  f6:	d9 d0       	rcall	.+434    	; 0x2aa <SPI_Send>
+	SPI_Send(address);
+  f8:	8f 2d       	mov	r24, r15
+  fa:	d7 d0       	rcall	.+430    	; 0x2aa <SPI_Send>
+	ReadData = SPI_Recv(0xFF);
+  fc:	8f ef       	ldi	r24, 0xFF	; 255
+  fe:	d9 d0       	rcall	.+434    	; 0x2b2 <SPI_Recv>
+ 100:	c8 2e       	mov	r12, r24
+ 102:	d1 2c       	mov	r13, r1
+ 104:	e1 2c       	mov	r14, r1
+ 106:	f1 2c       	mov	r15, r1
+	ReadData = (ReadData << 8);
+ 108:	fe 2c       	mov	r15, r14
+ 10a:	ed 2c       	mov	r14, r13
+ 10c:	dc 2c       	mov	r13, r12
+ 10e:	cc 24       	eor	r12, r12
+	ReadData |= SPI_Recv(0xFF);
+ 110:	8f ef       	ldi	r24, 0xFF	; 255
+ 112:	cf d0       	rcall	.+414    	; 0x2b2 <SPI_Recv>
+ 114:	c8 2a       	or	r12, r24
+	ReadData = (ReadData << 8);
+ 116:	fe 2c       	mov	r15, r14
+ 118:	ed 2c       	mov	r14, r13
+ 11a:	dc 2c       	mov	r13, r12
+ 11c:	cc 24       	eor	r12, r12
+	ReadData |= SPI_Recv(0xFF);
+ 11e:	8f ef       	ldi	r24, 0xFF	; 255
+ 120:	c8 d0       	rcall	.+400    	; 0x2b2 <SPI_Recv>
+	PORTB |= (1<<EEPROM_CHIPSELECT);
+ 122:	c0 9a       	sbi	0x18, 0	; 24
+ 124:	2f ef       	ldi	r18, 0xFF	; 255
+ 126:	30 e7       	ldi	r19, 0x70	; 112
+ 128:	42 e0       	ldi	r20, 0x02	; 2
+ 12a:	21 50       	subi	r18, 0x01	; 1
+ 12c:	30 40       	sbci	r19, 0x00	; 0
+ 12e:	40 40       	sbci	r20, 0x00	; 0
+ 130:	e1 f7       	brne	.-8      	; 0x12a <EEPROM_Read+0x48>
+ 132:	00 c0       	rjmp	.+0      	; 0x134 <EEPROM_Read+0x52>
+ 134:	00 00       	nop
+	SPI_Send(address);
+	ReadData = SPI_Recv(0xFF);
+	ReadData = (ReadData << 8);
+	ReadData |= SPI_Recv(0xFF);
+	ReadData = (ReadData << 8);
+	ReadData |= SPI_Recv(0xFF);
+ 136:	a7 01       	movw	r20, r14
+ 138:	96 01       	movw	r18, r12
+ 13a:	28 2b       	or	r18, r24
+ 13c:	ca 01       	movw	r24, r20
+ 13e:	b9 01       	movw	r22, r18
+	PORTB |= (1<<EEPROM_CHIPSELECT);
+	_delay_ms(100);
+	
+	return ReadData;
+}
+ 140:	ff 90       	pop	r15
+ 142:	ef 90       	pop	r14
+ 144:	df 90       	pop	r13
+ 146:	cf 90       	pop	r12
+ 148:	08 95       	ret
+
+0000014a <main>:
+{
+	uint32_t DigitalTemperatureData = 55;
+	uint16_t Eeprom_Address = 0;
+	
+	/* Initializing SPI Protocol as Master */
+	SPI_Init(Spi_Master);
+ 14a:	80 e0       	ldi	r24, 0x00	; 0
+ 14c:	8e d0       	rcall	.+284    	; 0x26a <SPI_Init>
+ 14e:	2f ef       	ldi	r18, 0xFF	; 255
+ 150:	80 e7       	ldi	r24, 0x70	; 112
+ 152:	92 e0       	ldi	r25, 0x02	; 2
+ 154:	21 50       	subi	r18, 0x01	; 1
+ 156:	80 40       	sbci	r24, 0x00	; 0
+ 158:	90 40       	sbci	r25, 0x00	; 0
+ 15a:	e1 f7       	brne	.-8      	; 0x154 <main+0xa>
+ 15c:	00 c0       	rjmp	.+0      	; 0x15e <main+0x14>
+ 15e:	00 00       	nop
+	_delay_ms(100);
+			
+	/* Select SPI operation mode into CPOL = 1 (High Idle Line) & CPHA = 1 (Sample on Rising edge) */
+	SPI_OperationMode(Mode3);
+ 160:	83 e0       	ldi	r24, 0x03	; 3
+ 162:	8f d0       	rcall	.+286    	; 0x282 <SPI_OperationMode>
+ 164:	2f ef       	ldi	r18, 0xFF	; 255
+ 166:	80 e7       	ldi	r24, 0x70	; 112
+ 168:	92 e0       	ldi	r25, 0x02	; 2
+ 16a:	21 50       	subi	r18, 0x01	; 1
+ 16c:	80 40       	sbci	r24, 0x00	; 0
+ 16e:	90 40       	sbci	r25, 0x00	; 0
+ 170:	e1 f7       	brne	.-8      	; 0x16a <main+0x20>
+ 172:	00 c0       	rjmp	.+0      	; 0x174 <main+0x2a>
+ 174:	00 00       	nop
+	_delay_ms(100);
+	
+	/* Initializing Digital Temperature Sensor */
+	DigitalTemp_Init();
+ 176:	39 d0       	rcall	.+114    	; 0x1ea <DigitalTemp_Init>
+ 178:	2f ef       	ldi	r18, 0xFF	; 255
+ 17a:	80 e7       	ldi	r24, 0x70	; 112
+ 17c:	92 e0       	ldi	r25, 0x02	; 2
+ 17e:	21 50       	subi	r18, 0x01	; 1
+ 180:	80 40       	sbci	r24, 0x00	; 0
+ 182:	90 40       	sbci	r25, 0x00	; 0
+ 184:	e1 f7       	brne	.-8      	; 0x17e <main+0x34>
+ 186:	00 c0       	rjmp	.+0      	; 0x188 <main+0x3e>
+ 188:	00 00       	nop
+	_delay_ms(100);
+	
+	/* Initializing 256-kbit EEPROM */
+	EEPROM_Init();
+ 18a:	56 df       	rcall	.-340    	; 0x38 <EEPROM_Init>
+ 18c:	2f ef       	ldi	r18, 0xFF	; 255
+ 18e:	80 e7       	ldi	r24, 0x70	; 112
+ 190:	92 e0       	ldi	r25, 0x02	; 2
+ 192:	21 50       	subi	r18, 0x01	; 1
+ 194:	80 40       	sbci	r24, 0x00	; 0
+ 196:	90 40       	sbci	r25, 0x00	; 0
+ 198:	e1 f7       	brne	.-8      	; 0x192 <main+0x48>
+ 19a:	00 c0       	rjmp	.+0      	; 0x19c <main+0x52>
+ 19c:	00 00       	nop
+
+
+int main(void)
+{
+	uint32_t DigitalTemperatureData = 55;
+	uint16_t Eeprom_Address = 0;
+ 19e:	c0 e0       	ldi	r28, 0x00	; 0
+ 1a0:	d0 e0       	ldi	r29, 0x00	; 0
+	
+	while(1)
+	{
+		//TODO:: Please write your application code
+		/* Reading Temperature */
+		DigitalTemperatureData = DigitalTemp_Read();
+ 1a2:	3e d0       	rcall	.+124    	; 0x220 <DigitalTemp_Read>
+ 1a4:	ab 01       	movw	r20, r22
+ 1a6:	bc 01       	movw	r22, r24
+ 1a8:	2f ef       	ldi	r18, 0xFF	; 255
+ 1aa:	89 e6       	ldi	r24, 0x69	; 105
+ 1ac:	98 e1       	ldi	r25, 0x18	; 24
+ 1ae:	21 50       	subi	r18, 0x01	; 1
+ 1b0:	80 40       	sbci	r24, 0x00	; 0
+ 1b2:	90 40       	sbci	r25, 0x00	; 0
+ 1b4:	e1 f7       	brne	.-8      	; 0x1ae <main+0x64>
+ 1b6:	00 c0       	rjmp	.+0      	; 0x1b8 <main+0x6e>
+ 1b8:	00 00       	nop
+		_delay_ms(1000);
+		
+		/* Write the Temperature Data into the EEPROM */
+		EEPROM_Write(Eeprom_Address, DigitalTemperatureData);
+ 1ba:	ce 01       	movw	r24, r28
+ 1bc:	40 df       	rcall	.-384    	; 0x3e <EEPROM_Write>
+ 1be:	2f ef       	ldi	r18, 0xFF	; 255
+ 1c0:	89 e6       	ldi	r24, 0x69	; 105
+ 1c2:	98 e1       	ldi	r25, 0x18	; 24
+ 1c4:	21 50       	subi	r18, 0x01	; 1
+ 1c6:	80 40       	sbci	r24, 0x00	; 0
+ 1c8:	90 40       	sbci	r25, 0x00	; 0
+ 1ca:	e1 f7       	brne	.-8      	; 0x1c4 <main+0x7a>
+ 1cc:	00 c0       	rjmp	.+0      	; 0x1ce <main+0x84>
+ 1ce:	00 00       	nop
+		_delay_ms(1000);
+		
+		/* Read the data on the wrote address (For Verification) */
+		EEPROM_Read(Eeprom_Address);
+ 1d0:	ce 01       	movw	r24, r28
+ 1d2:	87 df       	rcall	.-242    	; 0xe2 <EEPROM_Read>
+ 1d4:	2f ef       	ldi	r18, 0xFF	; 255
+ 1d6:	89 e6       	ldi	r24, 0x69	; 105
+ 1d8:	98 e1       	ldi	r25, 0x18	; 24
+ 1da:	21 50       	subi	r18, 0x01	; 1
+ 1dc:	80 40       	sbci	r24, 0x00	; 0
+ 1de:	90 40       	sbci	r25, 0x00	; 0
+ 1e0:	e1 f7       	brne	.-8      	; 0x1da <main+0x90>
+ 1e2:	00 c0       	rjmp	.+0      	; 0x1e4 <main+0x9a>
+ 1e4:	00 00       	nop
+		_delay_ms(1000);
+		
+		Eeprom_Address += 3;
+ 1e6:	23 96       	adiw	r28, 0x03	; 3
+ 1e8:	dc cf       	rjmp	.-72     	; 0x1a2 <main+0x58>
+
+000001ea <DigitalTemp_Init>:
+#include "DIGTEMP_TC72.h"
+
+void DigitalTemp_Init(void)
+{
+	/* Make & Configure Chip Select pin for DIGTEMP */
+	DDRB |= (1<<DIGTEMP_CHIPSELECT);
+ 1ea:	b9 9a       	sbi	0x17, 1	; 23
+	PORTB &= ~(1<<DIGTEMP_CHIPSELECT);
+ 1ec:	c1 98       	cbi	0x18, 1	; 24
+ 1ee:	2f ef       	ldi	r18, 0xFF	; 255
+ 1f0:	80 e7       	ldi	r24, 0x70	; 112
+ 1f2:	92 e0       	ldi	r25, 0x02	; 2
+ 1f4:	21 50       	subi	r18, 0x01	; 1
+ 1f6:	80 40       	sbci	r24, 0x00	; 0
+ 1f8:	90 40       	sbci	r25, 0x00	; 0
+ 1fa:	e1 f7       	brne	.-8      	; 0x1f4 <DigitalTemp_Init+0xa>
+ 1fc:	00 c0       	rjmp	.+0      	; 0x1fe <DigitalTemp_Init+0x14>
+ 1fe:	00 00       	nop
+	_delay_ms(100);
+	
+	/* Configure the sensor settings */
+	PORTB |= (1<<DIGTEMP_CHIPSELECT);		// PORTB.1 to HIGH to select the Digital Temp Sensor
+ 200:	c1 9a       	sbi	0x18, 1	; 24
+	SPI_Send(0x80);
+ 202:	80 e8       	ldi	r24, 0x80	; 128
+ 204:	52 d0       	rcall	.+164    	; 0x2aa <SPI_Send>
+	SPI_Send(0x04);
+ 206:	84 e0       	ldi	r24, 0x04	; 4
+ 208:	50 d0       	rcall	.+160    	; 0x2aa <SPI_Send>
+	PORTB &= ~(1<<DIGTEMP_CHIPSELECT);		// PORTB.1 to LOW to De-select the Digital Temp Sensor
+ 20a:	c1 98       	cbi	0x18, 1	; 24
+ 20c:	2f ef       	ldi	r18, 0xFF	; 255
+ 20e:	80 e7       	ldi	r24, 0x70	; 112
+ 210:	92 e0       	ldi	r25, 0x02	; 2
+ 212:	21 50       	subi	r18, 0x01	; 1
+ 214:	80 40       	sbci	r24, 0x00	; 0
+ 216:	90 40       	sbci	r25, 0x00	; 0
+ 218:	e1 f7       	brne	.-8      	; 0x212 <DigitalTemp_Init+0x28>
+ 21a:	00 c0       	rjmp	.+0      	; 0x21c <DigitalTemp_Init+0x32>
+ 21c:	00 00       	nop
+ 21e:	08 95       	ret
+
+00000220 <DigitalTemp_Read>:
+	_delay_ms(100);
+}
+
+uint32_t DigitalTemp_Read(void)
+{
+ 220:	cf 92       	push	r12
+ 222:	df 92       	push	r13
+ 224:	ef 92       	push	r14
+ 226:	ff 92       	push	r15
+	uint32_t RecvData;
+	
+	/* Read the Temperature in order of MSB, LSB, & Config */
+	PORTB |= (1<<DIGTEMP_CHIPSELECT);
+ 228:	c1 9a       	sbi	0x18, 1	; 24
+	SPI_Send(MSB_READ_ADDR);
+ 22a:	82 e0       	ldi	r24, 0x02	; 2
+ 22c:	3e d0       	rcall	.+124    	; 0x2aa <SPI_Send>
+	RecvData = SPI_Recv(0xFF);
+ 22e:	8f ef       	ldi	r24, 0xFF	; 255
+ 230:	40 d0       	rcall	.+128    	; 0x2b2 <SPI_Recv>
+ 232:	c8 2e       	mov	r12, r24
+ 234:	d1 2c       	mov	r13, r1
+ 236:	e1 2c       	mov	r14, r1
+ 238:	f1 2c       	mov	r15, r1
+	RecvData = RecvData << 8;
+ 23a:	fe 2c       	mov	r15, r14
+ 23c:	ed 2c       	mov	r14, r13
+ 23e:	dc 2c       	mov	r13, r12
+ 240:	cc 24       	eor	r12, r12
+	RecvData |= SPI_Recv(0xFF);
+ 242:	8f ef       	ldi	r24, 0xFF	; 255
+ 244:	36 d0       	rcall	.+108    	; 0x2b2 <SPI_Recv>
+ 246:	c8 2a       	or	r12, r24
+	RecvData = RecvData << 8;
+ 248:	fe 2c       	mov	r15, r14
+ 24a:	ed 2c       	mov	r14, r13
+ 24c:	dc 2c       	mov	r13, r12
+ 24e:	cc 24       	eor	r12, r12
+	RecvData |= SPI_Recv(0xFF);
+ 250:	8f ef       	ldi	r24, 0xFF	; 255
+ 252:	2f d0       	rcall	.+94     	; 0x2b2 <SPI_Recv>
+	PORTB &= ~(1<<DIGTEMP_CHIPSELECT);
+ 254:	c1 98       	cbi	0x18, 1	; 24
+	SPI_Send(MSB_READ_ADDR);
+	RecvData = SPI_Recv(0xFF);
+	RecvData = RecvData << 8;
+	RecvData |= SPI_Recv(0xFF);
+	RecvData = RecvData << 8;
+	RecvData |= SPI_Recv(0xFF);
+ 256:	a7 01       	movw	r20, r14
+ 258:	96 01       	movw	r18, r12
+ 25a:	28 2b       	or	r18, r24
+ 25c:	ca 01       	movw	r24, r20
+ 25e:	b9 01       	movw	r22, r18
+	PORTB &= ~(1<<DIGTEMP_CHIPSELECT);
+	
+	return RecvData;
+ 260:	ff 90       	pop	r15
+ 262:	ef 90       	pop	r14
+ 264:	df 90       	pop	r13
+ 266:	cf 90       	pop	r12
+ 268:	08 95       	ret
+
+0000026a <SPI_Init>:
+#include "SPI_REG_BASED.h"
+
+void SPI_Init(SpiMode eSpiState)
+{	
+	/* Define SPI State */
+	if(eSpiState == Spi_Slave)
+ 26a:	81 30       	cpi	r24, 0x01	; 1
+ 26c:	29 f4       	brne	.+10     	; 0x278 <SPI_Init+0xe>
+	{
+		/* Setting MISO as OUTPUT */
+		DDRB = (1<<MISO);
+ 26e:	80 e1       	ldi	r24, 0x10	; 16
+ 270:	87 bb       	out	0x17, r24	; 23
+		
+		/* Slave SPI Setting */
+		SPCR = (1<<SPE);
+ 272:	80 e4       	ldi	r24, 0x40	; 64
+ 274:	8d b9       	out	0x0d, r24	; 13
+ 276:	08 95       	ret
+	}
+	else
+	{	
+		/* Setting SS, MOSI, & SCK as OUTPUT */
+		DDRB = (1<<SS)|(1<<MOSI)|(1<<SCK);
+ 278:	8c e2       	ldi	r24, 0x2C	; 44
+ 27a:	87 bb       	out	0x17, r24	; 23
+		
+		/* Master SPI Setting */
+		SPCR = (1<<SPE)|(1<<MSTR);
+ 27c:	80 e5       	ldi	r24, 0x50	; 80
+ 27e:	8d b9       	out	0x0d, r24	; 13
+ 280:	08 95       	ret
+
+00000282 <SPI_OperationMode>:
+}
+
+void SPI_OperationMode(SpiOpMode eSpiOpMode)
+{
+	/* Selecting the operation mode of the SPI */
+	switch(eSpiOpMode)
+ 282:	81 30       	cpi	r24, 0x01	; 1
+ 284:	49 f0       	breq	.+18     	; 0x298 <SPI_OperationMode+0x16>
+ 286:	28 f0       	brcs	.+10     	; 0x292 <SPI_OperationMode+0x10>
+ 288:	82 30       	cpi	r24, 0x02	; 2
+ 28a:	49 f0       	breq	.+18     	; 0x29e <SPI_OperationMode+0x1c>
+ 28c:	83 30       	cpi	r24, 0x03	; 3
+ 28e:	51 f0       	breq	.+20     	; 0x2a4 <SPI_OperationMode+0x22>
+ 290:	08 95       	ret
+	{
+		case Mode0:
+			/* LOW Idle Line & Rising Edge Data Sampling */ 
+			SPCR &= ~(1<<CPOL);
+ 292:	6b 98       	cbi	0x0d, 3	; 13
+			SPCR &= ~(1<<CPHA);
+ 294:	6a 98       	cbi	0x0d, 2	; 13
+			break;
+ 296:	08 95       	ret
+		case Mode1:
+			/* LOW Idle Line & Falling Edge Data Sampling */
+			SPCR &= ~(1<<CPOL);
+ 298:	6b 98       	cbi	0x0d, 3	; 13
+			SPCR |= (1<<CPHA);
+ 29a:	6a 9a       	sbi	0x0d, 2	; 13
+			break;
+ 29c:	08 95       	ret
+		case Mode2:
+			/* HIGH Idle Line & Falling Edge Data Sampling */
+			SPCR |= (1<<CPOL);
+ 29e:	6b 9a       	sbi	0x0d, 3	; 13
+			SPCR &= ~(1<<CPHA);
+ 2a0:	6a 98       	cbi	0x0d, 2	; 13
+			break;
+ 2a2:	08 95       	ret
+		case Mode3:
+			/* HIGH Idle Line & Rising Edge Data Sampling */
+			SPCR |= (1<<CPOL);
+ 2a4:	6b 9a       	sbi	0x0d, 3	; 13
+			SPCR |= (1<<CPHA);
+ 2a6:	6a 9a       	sbi	0x0d, 2	; 13
+ 2a8:	08 95       	ret
+
+000002aa <SPI_Send>:
+
+
+void SPI_Send(uint8_t Data)
+{	
+	/* loading Data into the SPI Data register */
+	SPDR = Data;
+ 2aa:	8f b9       	out	0x0f, r24	; 15
+	
+	/* Wait until transmission completion */
+	while(!(SPSR & (1<<SPIF)));
+ 2ac:	77 9b       	sbis	0x0e, 7	; 14
+ 2ae:	fe cf       	rjmp	.-4      	; 0x2ac <SPI_Send+0x2>
+}
+ 2b0:	08 95       	ret
+
+000002b2 <SPI_Recv>:
+
+uint8_t SPI_Recv(uint8_t Data)
+{
+	/* loading Dummy Data into the SPI Data register */
+	SPDR = Data;
+ 2b2:	8f b9       	out	0x0f, r24	; 15
+	
+	/* Wait until transmission completion */
+	while(!(SPSR & (1<<SPIF)));
+ 2b4:	77 9b       	sbis	0x0e, 7	; 14
+ 2b6:	fe cf       	rjmp	.-4      	; 0x2b4 <SPI_Recv+0x2>
+	
+	return SPDR;
+ 2b8:	8f b1       	in	r24, 0x0f	; 15
+}
+ 2ba:	08 95       	ret
+
+000002bc <_exit>:
+ 2bc:	f8 94       	cli
+
+000002be <__stop_program>:
+ 2be:	ff cf       	rjmp	.-2      	; 0x2be <__stop_program>
